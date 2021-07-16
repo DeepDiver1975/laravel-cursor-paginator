@@ -103,7 +103,7 @@ class QueryMeta
 
     protected function modelsEqual($first, $second)
     {
-        if (method_exists($first, 'is')) {
+        if ($first !== null && method_exists($first, 'is')) {
             return $first->is($second);
         }
         return $first == $second;

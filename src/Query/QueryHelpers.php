@@ -10,7 +10,7 @@ trait QueryHelpers
 
     protected function extractQueryObject($query)
     {
-        if (method_exists($query, 'getQuery')) {
+        if ($query !== null && method_exists($query, 'getQuery')) {
             return $query->getQuery();
         }
 
@@ -61,7 +61,7 @@ trait QueryHelpers
 
     protected function orderColumnIsDate($query, $index) 
     {
-        if (method_exists($query, 'getModel')) {
+        if ($query !== null && method_exists($query, 'getModel')) {
             $column = $this->getOrderColumn($query, $index);
             if (in_array($column, $query->getModel()->getDates())) {
                 return true;
@@ -72,7 +72,7 @@ trait QueryHelpers
 
     protected function getCleanQueryFrom($query)
     {
-        if (method_exists($query, 'getModel')) {
+        if ($query !== null && method_exists($query, 'getModel')) {
             return $query->getModel()->query()->withoutGlobalScopes();
         }
         return DB::table($query->from);
@@ -87,14 +87,14 @@ trait QueryHelpers
 
     protected function copyEagerLoad($from, $to)
     {
-        if (method_exists($to, 'setEagerLoads') && method_exists($from, 'getEagerLoads')) {
+        if ($from !== null && $to !== null && method_exists($to, 'setEagerLoads') && method_exists($from, 'getEagerLoads')) {
             $to->setEagerLoads($from->getEagerLoads());
         }
     }
 
     protected function removeEagerLoad($query) 
     {
-        if (method_exists($query, 'setEagerLoads')) {
+        if ($query !== null && method_exists($query, 'setEagerLoads')) {
             $query->setEagerLoads([]);
         }
     }

@@ -47,6 +47,16 @@ class MacroTest extends TestCase
     }
 
     /** @test */
+    public function paginator_on_empty_result_set()
+    {
+        $this->request(['after' => 10]);
+
+        $paginatorData = Reply::orderBy('id')->where('id', '>', 10)->cursorPaginate(3)->toArray();
+
+        $this->assertEquals([], collect($paginatorData['data'])->pluck('id')->all());
+    }
+
+    /** @test */
     public function paginator_returns_first_page_if_request_has_no_cursor()
     {
 
