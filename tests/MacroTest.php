@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Amrnn\CursorPaginator\Exceptions\CursorPaginatorException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Models\Reply;
 use Illuminate\Http\Request;
@@ -188,5 +189,13 @@ class MacroTest extends TestCase
 
         $this->assertEquals($items->all(), $paginatorData['data']);
         $this->assertEquals($nextItem, $paginatorData['next_item']);
+    }
+
+    /** @test */
+    public function cursor_has_too_many_targets()
+    {
+        $this->expectException(CursorPaginatorException::class);
+        $this->request(['before' => '5,x']);
+        $paginatorData = Reply::select('id')->orderBy('id')->paginateWithCursor()->toArray();
     }
 }

@@ -41,7 +41,11 @@ trait QueryHelpers
 
     protected function getOrderDirection($query, $index)
     {
-        return $this->extractQueryObject($query)->orders[$index]['direction'];
+        if($this->hasOrderColumn($query, $index)) {
+            return $this->extractQueryObject($query)->orders[$index]['direction'];
+        }
+
+        throw new CursorPaginatorException('Targets not matching query orders.');
     }
 
     protected function reverseQueryOrders($query)
