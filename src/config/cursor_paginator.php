@@ -42,7 +42,7 @@ return [
     /**
      * Default number of items per page.
      * 
-     * This can be overridden by passing a first argument to the `cursorPaginate()` method.
+     * This can be overridden by passing a first argument to the `paginateWithCursor()` method.
      */
     'per_page' => 10,
 ];

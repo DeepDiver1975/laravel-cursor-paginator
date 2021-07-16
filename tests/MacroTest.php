@@ -31,7 +31,7 @@ class MacroTest extends TestCase
     {
         $this->request(['before' => 1]);
 
-        $paginator = Reply::orderBy('id')->cursorPaginate();
+        $paginator = Reply::orderBy('id')->paginateWithCursor();
 
         $this->assertInstanceOf(CursorPaginator::class, $paginator);
     }
@@ -41,7 +41,7 @@ class MacroTest extends TestCase
     {
         $this->request(['before' => 5]);
 
-        $paginatorData = Reply::orderBy('id')->cursorPaginate(3)->toArray();
+        $paginatorData = Reply::orderBy('id')->paginateWithCursor(3)->toArray();
 
         $this->assertEquals([2, 3, 4], collect($paginatorData['data'])->pluck('id')->all());
     }
@@ -51,7 +51,7 @@ class MacroTest extends TestCase
     {
         $this->request(['after' => 10]);
 
-        $paginatorData = Reply::orderBy('id')->where('id', '>', 10)->cursorPaginate(3)->toArray();
+        $paginatorData = Reply::orderBy('id')->where('id', '>', 10)->paginateWithCursor(3)->toArray();
 
         $this->assertEquals([], collect($paginatorData['data'])->pluck('id')->all());
     }
@@ -60,7 +60,7 @@ class MacroTest extends TestCase
     public function paginator_returns_first_page_if_request_has_no_cursor()
     {
 
-        $paginatorData = Reply::orderBy('id')->cursorPaginate(3)->toArray();
+        $paginatorData = Reply::orderBy('id')->paginateWithCursor(3)->toArray();
 
         $this->assertEquals([1, 2, 3], collect($paginatorData['data'])->pluck('id')->all());
         $this->assertEquals(new Cursor('after_i', 1), $paginatorData['current_page']);
@@ -76,7 +76,7 @@ class MacroTest extends TestCase
 
         $this->request(['before_i' => Carbon::create(2008)->timestamp]);
 
-        $paginatorData = Reply::orderBy('created_at')->cursorPaginate(3)->toArray();
+        $paginatorData = Reply::orderBy('created_at')->paginateWithCursor(3)->toArray();
 
         $this->assertEquals(
             [2004, 2006, 2008],
@@ -95,7 +95,7 @@ class MacroTest extends TestCase
 
         $this->request(['before' => Carbon::create(2010)->timestamp]);
 
-        $paginatorData = DB::table('replies')->orderBy('created_at')->cursorPaginate(3, ['dates' => ['created_at']])->toArray();
+        $paginatorData = DB::table('replies')->orderBy('created_at')->paginateWithCursor(3, ['dates' => ['created_at']])->toArray();
 
         $this->assertEquals(
             [2006, 2008, 2009],
@@ -118,11 +118,11 @@ class MacroTest extends TestCase
         ], 'cursor_paginator.encode_cursor' => false]);
 
         $this->request(['b' => 5]);
-        $paginatorData = Reply::orderBy('id')->cursorPaginate(3)->toArray();
+        $paginatorData = Reply::orderBy('id')->paginateWithCursor(3)->toArray();
         $this->assertEquals(['direction' => 'b', 'target' => 5], $paginatorData['current_page']->toArray());
 
         $this->request(['a' => 5]);
-        $paginatorData = Reply::orderBy('id')->cursorPaginate(3)->toArray();
+        $paginatorData = Reply::orderBy('id')->paginateWithCursor(3)->toArray();
         $this->assertEquals(['direction' => 'a', 'target' => 5], $paginatorData['current_page']->toArray());
 
         $this->assertEquals(['direction' => 'ai', 'target' => 1], $paginatorData['first_page']->toArray());
@@ -145,11 +145,11 @@ class MacroTest extends TestCase
         ]]);
 
         $this->request(['page-id' => 'eyJiIjo1fQ']);
-        $paginatorData = Reply::orderBy('id')->cursorPaginate(3)->toArray();
+        $paginatorData = Reply::orderBy('id')->paginateWithCursor(3)->toArray();
         $this->assertEquals(['page-id' => 'eyJiIjo1fQ'], $paginatorData['current_page']->toArray());
 
         $this->request(['page-id' => 'eyJhIjo1fQ']);
-        $paginatorData = Reply::orderBy('id')->cursorPaginate(3)->toArray();
+        $paginatorData = Reply::orderBy('id')->paginateWithCursor(3)->toArray();
         $this->assertEquals(['page-id' => 'eyJhIjo1fQ'], $paginatorData['current_page']->toArray());
 
         $this->assertEquals(['page-id' => 'eyJhaSI6MX0'], $paginatorData['first_page']->toArray());
@@ -160,12 +160,12 @@ class MacroTest extends TestCase
     public function use_defaut_per_page_from_config()
     {
         $this->request(['before' => 5]);
-        $paginatorData = Reply::orderBy('id')->cursorPaginate()->toArray();
+        $paginatorData = Reply::orderBy('id')->paginateWithCursor()->toArray();
         $this->assertEquals(10, $paginatorData['per_page']);
 
         config(['cursor_paginator.per_page' => 20]);
         $this->request(['before' => 5]);
-        $paginatorData = Reply::orderBy('id')->cursorPaginate()->toArray();
+        $paginatorData = Reply::orderBy('id')->paginateWithCursor()->toArray();
         $this->assertEquals(20, $paginatorData['per_page']);
     }
 
@@ -173,7 +173,7 @@ class MacroTest extends TestCase
     public function allows_selecting_columns()
     {
         $this->request(['before' => 5]);
-        $paginatorData = Reply::select('id')->orderBy('id')->cursorPaginate()->toArray();
+        $paginatorData = Reply::select('id')->orderBy('id')->paginateWithCursor()->toArray();
 
         $this->assertEquals(['id' => 1], $paginatorData['data'][0]->toArray());
     }
@@ -182,7 +182,7 @@ class MacroTest extends TestCase
     public function paginator_result_contains_next_item()
     {
         $this->request(['after_i' => 1]);
-        $paginatorData = Reply::orderBy('id')->cursorPaginate(3)->toArray();
+        $paginatorData = Reply::orderBy('id')->paginateWithCursor(3)->toArray();
         $items = Reply::whereIn('id', [1, 2, 3])->get();
         $nextItem = Reply::find(4);
 
