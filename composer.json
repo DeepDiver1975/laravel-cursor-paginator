@@ -1,6 +1,6 @@
 {
-  "name": "amrnn/laravel-cursor-paginator",
-  "description": "Cursor pagination for Laravel",
+  "name": "deepdiver/laravel-cursor-paginator",
+  "description": "Cursor pagination for Laravel 8",
   "keywords": [
     "laravel",
     "eloquent",
@@ -18,6 +18,11 @@
     {
       "name": "Amr Noman",
       "email": "amrnn90@gmail.com"
+    },
+    {
+      "name": "Thomas Müller",
+      "email": "thomas.mueller0@tmit.eu"
+
     }
   ],
   "autoload": {
