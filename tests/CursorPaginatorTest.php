@@ -239,12 +239,10 @@ class CursorPaginatorTest extends TestCase
         config(['cursor_paginator.encode_cursor' => false]);
 
         $paginator = new CursorPaginator([2, 3, 4], 3, $this->meta(['previous' => null, 'next' => new Cursor('after', 3)]));
-        $this->assertStringContainsString('<li class="page-item disabled" aria-disabled="true">', $paginator->links());
-        $this->assertStringContainsString('<a class="page-link" href="http://localhost?after=3" rel="next">', $paginator->links());
+        $this->assertStringContainsString('<a href="http://localhost?after=3" rel="next"', $paginator->links());
 
         $paginator = new CursorPaginator([2, 3, 4], 3, $this->meta(['previous' => new Cursor('before_i', 5), 'next' => null]));
-        $this->assertStringContainsString('<a class="page-link" href="http://localhost?before_i=5" rel="prev">', $paginator->links());
-        $this->assertStringContainsString('<li class="page-item disabled" aria-disabled="true">', $paginator->links());
+        $this->assertStringContainsString('<a href="http://localhost?before_i=5" rel="prev"', $paginator->links());
 
         $paginator = new CursorPaginator([2, 3, 4], 3, $this->meta(['total' => 3]));
         $this->assertEquals('', $paginator->links());
@@ -252,12 +250,10 @@ class CursorPaginatorTest extends TestCase
         config(['cursor_paginator.encode_cursor' => true]);
 
         $paginator = new CursorPaginator([2, 3, 4], 3, $this->meta(['previous' => null, 'next' => new Cursor('after', 3)]));
-        $this->assertStringContainsString('<li class="page-item disabled" aria-disabled="true">', $paginator->links());
-        $this->assertStringContainsString('<a class="page-link" href="http://localhost?cursor=eyJhZnRlciI6M30" rel="next">', $paginator->links());
+        $this->assertStringContainsString('<a href="http://localhost?cursor=eyJhZnRlciI6M30" rel="next"', $paginator->links());
 
         $paginator = new CursorPaginator([2, 3, 4], 3, $this->meta(['previous' => new Cursor('before_i', 5), 'next' => null]));
-        $this->assertStringContainsString('<a class="page-link" href="http://localhost?cursor=eyJiZWZvcmVfaSI6NX0" rel="prev">', $paginator->links());
-        $this->assertStringContainsString('<li class="page-item disabled" aria-disabled="true">', $paginator->links());
+        $this->assertStringContainsString('<a href="http://localhost?cursor=eyJiZWZvcmVfaSI6NX0" rel="prev"', $paginator->links());
 
         $paginator = new CursorPaginator([2, 3, 4], 3, $this->meta(['total' => 3]));
         $this->assertEquals('', $paginator->links());

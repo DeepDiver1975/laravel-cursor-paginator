@@ -36,8 +36,8 @@ class PaginatorServiceProvider extends ServiceProvider
                 ->process($this);
         };
 
-        QueryBuilder::macro('cursorPaginate', $macro);
-        EloquentBuilder::macro('cursorPaginate', $macro);
+        QueryBuilder::macro('paginateWithCursor', $macro);
+        EloquentBuilder::macro('paginateWithCursor', $macro);
     }
 
 
