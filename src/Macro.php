@@ -49,8 +49,10 @@ class Macro
 
     protected function meta($query, $items, $nextItem)
     {
+        $metaHasTotal = config('cursor_paginator.meta.total', true);
+        $hasFirstAndLast = config('cursor_paginator.meta.hasFirstAndLast', true);
         $targetsManager = new TargetsManager($query, $this->options);
-        return (new Query\QueryMeta($query, $items, $this->currentCursor, $targetsManager, $nextItem))
+        return (new Query\QueryMeta($query, $items, $this->currentCursor, $targetsManager, $nextItem, $metaHasTotal, $hasFirstAndLast))
             ->meta();
     }
 }

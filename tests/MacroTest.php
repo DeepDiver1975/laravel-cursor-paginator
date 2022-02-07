@@ -198,4 +198,23 @@ class MacroTest extends TestCase
         $this->request(['before' => '5,x']);
         $paginatorData = Reply::select('id')->orderBy('id')->paginateWithCursor()->toArray();
     }
+
+    /** @test */
+    public function does_not_return_total_first_last()
+    {
+        config(['cursor_paginator' => [
+            'encode_cursor' => false,
+            'meta' => [
+                'total' => false,
+                'hasFirstAndLast' => false,
+            ]
+        ]]);
+
+        $this->request([]);
+        $paginatorData = Reply::orderBy('id')->paginateWithCursor(3)->toArray();
+        self::assertNull($paginatorData['total']);
+        self::assertNull($paginatorData['first_page']);
+        self::assertNull($paginatorData['last_page']);
+    }
+
 }

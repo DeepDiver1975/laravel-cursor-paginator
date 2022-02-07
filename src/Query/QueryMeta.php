@@ -14,8 +14,10 @@ class QueryMeta
     protected $currentCursor;
     protected $targetsManager;
     protected $nextItem;
+    private $hasTotal;
+    private  $hasFirstAndLast;
 
-    public function __construct($query, $items, $currentCursor, TargetsManager $targetsManager, $nextItem = null)
+    public function __construct($query, $items, $currentCursor, TargetsManager $targetsManager, $nextItem = null, $hasTotal = true, $hasFirstAndLast = true)
     {
         $this->ensureQueryIsOrdered($query);
         $this->query = clone $query;
@@ -23,6 +25,8 @@ class QueryMeta
         $this->currentCursor = $currentCursor;
         $this->targetsManager = $targetsManager;
         $this->nextItem = $nextItem;
+        $this->hasTotal = $hasTotal;
+        $this->hasFirstAndLast = $hasFirstAndLast;
     }
 
     public function meta()
@@ -113,20 +117,29 @@ class QueryMeta
     {
         $query = $this->query;
 
-        $count = with(clone $query)->count();
-        $firstLastQuery = $this->wrapQuery(
-            with(clone $query)->limit(1)->union(
-                with($this->reverseQueryOrders(clone $query))->limit(1)
-            )
-        );
-        $this->removeEagerLoad($firstLastQuery);
+        $count = $this->hasTotal ? with(clone $query)->count() : null;
 
-        $firstAndLast = $firstLastQuery->get();
+        if ($this->hasFirstAndLast) {
+            $firstLastQuery = $this->wrapQuery(
+                with(clone $query)->limit(1)->union(
+                    with($this->reverseQueryOrders(clone $query))->limit(1)
+                )
+            );
+            $this->removeEagerLoad($firstLastQuery);
+
+            $firstAndLast = $firstLastQuery->get();
+
+            return (object) [
+                'total' => $count,
+                'first' => $firstAndLast->first(),
+                'last' => $firstAndLast->last()
+            ];
+        }
 
         return (object) [
-            'total' => (int)$count,
-            'first' => $firstAndLast->first(),
-            'last' => $firstAndLast->last()
+            'total' => $count,
+            'first' => null,
+            'last' => null
         ];
     }
 }

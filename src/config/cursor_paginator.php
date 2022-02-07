@@ -45,4 +45,14 @@ return [
      * This can be overridden by passing a first argument to the `paginateWithCursor()` method.
      */
     'per_page' => 10,
+
+    /**
+     * Configuration options for meta data to contain:
+     * - total result set count
+     * - first and last cursor
+     */
+    'meta' => [
+        'total' => true,
+        'hasFirstAndLast' => true
+    ]
 ];

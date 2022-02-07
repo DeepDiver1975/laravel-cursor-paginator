@@ -106,4 +106,32 @@ class QueryMetaTest extends TestCase
 
         $this->assertEquals($nextItem, $meta['next_item']);
     }
+
+    /** @test */
+    public function it_gives_no_total()
+    {
+        $query = Reply::orderBy('id');
+        $items = Reply::whereIn('id', [1, 2, 3])->get()->sortBy('id');
+        $nextItem = Reply::find('id', 4);
+        $cursor = new Cursor('after_i', 1);
+        $targetsManager = new TargetsManager($query);
+        $meta = (new QueryMeta($query, $items, $cursor, $targetsManager, $nextItem, false))->meta();
+
+        $this->assertNull($meta['total']);
+    }
+
+    /** @test */
+    public function it_gives_neither_first_nor_last()
+    {
+        $query = Reply::orderBy('id');
+        $items = Reply::whereIn('id', [1, 2, 3])->get()->sortBy('id');
+        $nextItem = Reply::find('id', 4);
+        $cursor = new Cursor('after_i', 1);
+        $targetsManager = new TargetsManager($query);
+        $meta = (new QueryMeta($query, $items, $cursor, $targetsManager, $nextItem, true, false))->meta();
+
+        $this->assertNotNull($meta['total']);
+        $this->assertNull($meta['first']);
+        $this->assertNull($meta['last']);
+    }
 }
